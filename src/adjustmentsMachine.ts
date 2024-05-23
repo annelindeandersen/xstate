@@ -2,7 +2,7 @@ import { setup, assign } from "xstate";
 
 export const adjustmentsMachine = setup({
   types: {
-    context: {} as { toggledIDs: string[] },
+    context: {} as { toggledIDs: Set<string> },
     events: {} as
       | { type: "ADJUST" }
       | { type: "CLOSE" }
@@ -10,7 +10,7 @@ export const adjustmentsMachine = setup({
   },
 }).createMachine({
   id: "adjustmentsMachine",
-  context: { toggledIDs: [] },
+  context: { toggledIDs: new Set([]) },
   initial: "close",
   states: {
     close: {
@@ -24,7 +24,10 @@ export const adjustmentsMachine = setup({
         TOGGLE: {
           actions: assign({
             toggledIDs: ({ context, event }) =>
-              (context.toggledIDs = [...context.toggledIDs, event.value]),
+              (context.toggledIDs = new Set([
+                ...context.toggledIDs,
+                event.value,
+              ])),
           }),
         },
       },

@@ -9,7 +9,7 @@ const Toggle = () => {
   return (
     <button
       onClick={() => send({ type: "TOGGLE", value: "2" })}
-      className={state.toggledIDs.length > 0 ? "bg-green-400" : "bg-gray-200"}
+      className={state.toggledIDs.size > 0 ? "bg-green-400" : "bg-gray-200"}
     >
       Toggle
     </button>

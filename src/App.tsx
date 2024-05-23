@@ -6,7 +6,9 @@ import { AdjustmentContext } from "src";
 
 function App() {
   const type = AdjustmentContext.useSelector((s) => s.value);
+  const IDs = AdjustmentContext.useSelector((s) => s.context.toggledIDs);
 
+  console.log(IDs);
   return (
     <div className="p-10 flex flex-col gap-2">
       {type === "adjust" && <CloseButton />}
