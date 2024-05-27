@@ -1,0 +1,8 @@
+{
+  "data": {
+    "list_1": [
+      { "id": 1, "title": "I'm a navigation link" },
+      { "id": 2, "title": "I'm a navigation link as well" }
+    ]
+  }
+}
