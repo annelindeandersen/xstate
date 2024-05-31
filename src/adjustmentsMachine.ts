@@ -1,24 +1,65 @@
 import { updateLocalstorage } from "./hooks/updateLocalstorage";
-import { setup, assign } from "xstate";
+import {
+  setup,
+  assign,
+  SetupTypes,
+  NonReducibleUnknown,
+  EventObject,
+  MetaObject,
+} from "xstate";
+import { NavigationMenu } from "./navigationTypes";
+import { NavItem } from "@components/NavigationButton";
+import { updateDeselectItems } from "./hooks/updateDeselectItems";
 
 // interface Adjustment {
 //   [listId: string]: Set<string>;
 // }
 
+interface Ctx {
+  deselectedIds: Set<string>;
+  navigationMenu: NavigationMenu;
+}
+
+type Context = SetupTypes<
+  { deselectedIds: Set<string>; navigationMenu: NavigationMenu },
+  | { type: "SET_MENU"; value: NavigationMenu }
+  | { type: "TOGGLE"; value: string }
+  | { type: "ADJUST" }
+  | { type: "CLOSE" }
+  | { type: "SAVE" }
+  | { type: "DELETE" },
+  {},
+  string,
+  NonReducibleUnknown,
+  NonReducibleUnknown,
+  EventObject,
+  MetaObject
+>;
+
 export const adjustmentsMachine = setup({
   types: {
-    context: {} as { selectedIds: Set<string> },
+    context: {} as {
+      deselectedIds: Set<string>;
+      navigationMenu: NavigationMenu;
+    },
     events: {} as
+      | { type: "SET_MENU"; value: NavigationMenu }
       | { type: "TOGGLE"; value: string }
       | { type: "ADJUST" }
       | { type: "CLOSE" }
-      | { type: "SAVE" },
+      | { type: "SAVE" }
+      | { type: "DELETE"; value: string },
   },
 }).createMachine({
   /** @xstate-layout N4IgpgJg5mDOIC5QEMICsCusAuBbMAdtrALLIDGAFgJYFgB05ANgPaxgDEAggCIBSAVQDKAFQDaABgC6iUAAc21bNRYFZIAB6IAjAGYAnPQDsADgBsAFgCsR-btsAmIxKsAaEAE9ETi-W1HtEwcHfQsLE38LAF8o91RMHHwiUgoaOnp4rGwOAGEAGQB5IQBRSRkkEAVYJRU1Cq0EbSsJenMAoxCrM21tMPcvBGDfXSs7SIszbocYuPQspOIyKloGTJwOIS4ANVLpdSqa1XUGh0t6YIkJC0jdB109fp0jM3obCJdr8P19MxmQNbwhEWqRWGTm6xEBQA4lC8rtyvJFMojvVvDZWh1dCZwiYTLoDBZHggIvRbiEetjtGZTPoYrEQAQWBA4OoAQsUss6PskbVjogALRmImCv5soEctIMZhsMDc6rIuqgBoWBxE04vBxWKlmcwhFxOUXgwHJJaSsEJbByw6KzTean0SYWFwSbo2LF3NXPVr4kImfS47QOCS6OlRIA */
   id: "adjustmentsMachine",
-  context: { selectedIds: new Set([]) },
+  context: { deselectedIds: new Set([]), navigationMenu: {} },
   initial: "close",
+  on: {
+    SET_MENU: {
+      actions: assign({ navigationMenu: ({ event }) => event.value }),
+    },
+  },
   states: {
     close: {
       on: {
@@ -30,17 +71,51 @@ export const adjustmentsMachine = setup({
         CLOSE: "close",
         SAVE: {
           actions: ({ context }) =>
-            updateLocalstorage("1", [...context.selectedIds].join(", ")),
+            updateLocalstorage("1", [...context.deselectedIds].join(", ")),
         },
         TOGGLE: {
-          actions: assign({
-            selectedIds: ({ context, event }) =>
-              (context.selectedIds = context.selectedIds.delete(event.value)
-                ? new Set([...context.selectedIds])
-                : new Set([...context.selectedIds, event.value])),
-          }),
+          actions: [
+            assign({
+              deselectedIds: ({ context, event }) =>
+                (context.deselectedIds = context.deselectedIds.delete(
+                  event.value
+                )
+                  ? new Set([...context.deselectedIds])
+                  : new Set([
+                      ...context.deselectedIds,
+                      ...event.value.split(","),
+                    ])),
+            }),
+          ],
         },
       },
     },
   },
 });
+
+const existsInDeselected = (id: string, context: Ctx): Set<string> => {
+  const IDs = id.split(",");
+  console.log(IDs);
+
+  // if array, it will be the deselected children. They need to be deleted
+  // if (IDs.length > 1) {
+  for (let index = 0; index < IDs.length; index++) {
+    console.log(IDs[index]);
+    context.deselectedIds.delete(IDs[index]);
+  }
+
+  return context.deselectedIds;
+  // }
+  // return context?.deselectedIds?.delete(id);
+};
+
+// deselectedIds: ({ context, event }) =>
+//                 (context.deselectedIds = existsInDeselected(
+//                   event.value,
+//                   context
+//                 )
+//                   ? new Set([...context.deselectedIds])
+//                   : new Set([
+//                       ...context.deselectedIds,
+//                       ...event.value.split(","),
+//                     ])),

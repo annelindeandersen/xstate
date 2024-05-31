@@ -4,20 +4,29 @@ import NavigationButton from "./components/NavigationButton";
 import CloseButton from "./components/CloseButton";
 import { AdjustmentContext } from "src";
 import SaveButton from "./components/SaveButton";
-import data from "./data.json";
-
-// const data = [
-//   { id: 1, title: "I'm a navigation link" },
-//   { id: 2, title: "I'm a navigation link as well" },
-// ];
+import { navigationData } from "./flatData";
+import { useEffect } from "react";
 
 function App() {
+  const navigationActorRef = AdjustmentContext.useActorRef();
+  const { send } = navigationActorRef;
+
   const type = AdjustmentContext.useSelector((s) => s.value);
-  const IDs = AdjustmentContext.useSelector((s) => s.context.selectedIds);
+  const deselectedContext = AdjustmentContext.useSelector(
+    (s) => s.context.deselectedIds
+  );
+  const navigationContext = AdjustmentContext.useSelector(
+    (s) => s.context.navigationMenu
+  );
 
-  const dataList = data.data;
+  // console.log(deselectedContext);
+  // console.log(navigationContext);
 
-  console.log(IDs);
+  useEffect(() => {
+    if (JSON.stringify(navigationContext) === "{}") {
+      send({ type: "SET_MENU", value: navigationData });
+    }
+  }, []);
 
   return (
     <div className="py-10 px-32 flex flex-col gap-5">
@@ -31,9 +40,9 @@ function App() {
         {type === "adjust" && <CloseButton />}
       </div>
       <ul className="flex flex-col gap-2">
-        {dataList.list_1.map((item) => (
-          <li key={item.id}>
-            <NavigationButton item={item} />
+        {Object.keys(navigationData).map((item) => (
+          <li key={navigationData[item].id}>
+            <NavigationButton item={navigationData[item]} />
           </li>
         ))}
       </ul>
