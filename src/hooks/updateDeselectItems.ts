@@ -28,6 +28,8 @@ export const updateDeselectItems = (id: string, state: Ctx): string[] => {
       } else {
         deselects.push(id);
       }
+    } else {
+      deselects.push(id);
     }
   };
 

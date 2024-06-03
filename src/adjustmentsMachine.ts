@@ -55,23 +55,20 @@ export const adjustmentsMachine = setup({
               deselectedIds: ({ context, event }) => {
                 const set: any[] = [];
 
-                console.log("initial set", set);
+                console.log("initial set", set, context.deselectedIds);
 
                 if (context.deselectedIds.size > 0) {
                   for (let item of context.deselectedIds) {
-                    // console.log("Alle i settet :: ", item);
+                    console.log("Den klikkede:: ", event.value);
                     if (event.value.split(",").includes(item)) {
                       console.log("sletter :: ", item);
 
                       context.deselectedIds.delete(item);
-                      set.push(context.deselectedIds);
-
                       console.log(context.deselectedIds);
                       // set.push(...context.deselectedIds);
                     } else {
                       console.log("tilføjer :: ", item);
                       context.deselectedIds.add(item);
-                      set.push(...event.value.split(","));
                     }
                   }
                 } else {
@@ -79,45 +76,21 @@ export const adjustmentsMachine = setup({
                   set.push(...event.value.split(","));
                 }
 
+                console.log(new Set([...context.deselectedIds]));
                 console.log(new Set([...set]));
 
-                return new Set([...set]);
-
-                // return new Set([
-                //   ...context.deselectedIds,
-                //   ...event.value.split(","),
-                // ]);
+                if (set.length > 0) {
+                  return new Set([...set]);
+                } else {
+                  return new Set([...context.deselectedIds]);
+                }
               },
             }),
-          // assign({
-          //   deselectedIds: ({ context, event }) =>
-          //     (context.deselectedIds = context.deselectedIds.delete(
-          //       event.value
-          //     )
-          //       ? new Set([...context.deselectedIds])
-          //       : new Set([
-          //           ...context.deselectedIds,
-          //           ...event.value.split(","),
-          //         ])),
-          // }),
         },
       },
     },
   },
 });
-
-// const countActor = createActor(adjustmentsMachine).start();
-
-// countActor.subscribe((state) => {
-//   console.log("Deselected IDs :: ", state.context.deselectedIds);
-// });
-
-// const handleToggle = (context: Ctx): Set<string> => {
-//   for (let item of context.deselectedIds) {
-//     // if (item < 10) set.add(item + 1);
-//     console.log(item);
-//   }
-// };
 
 const existsInDeselected = (id: string, context: Ctx): Set<string> => {
   const IDs = id.split(",");
