@@ -1,7 +1,6 @@
 import { updateLocalstorage } from "./hooks/updateLocalstorage";
-import { setup, assign, createActor } from "xstate";
+import { setup, assign } from "xstate";
 import { NavigationMenu } from "./navigationTypes";
-import { updateDeselectItems } from "./hooks/updateDeselectItems";
 
 export interface Ctx {
   deselectedIds: Set<string>;
@@ -46,75 +45,25 @@ export const adjustmentsMachine = setup({
             updateLocalstorage("1", [...context.deselectedIds].join(", ")),
         },
         TOGGLE: {
-          actions:
-            // assign({
-            //   deselectedIds: ({ context, event }) =>
-            //     new Set([...context.deselectedIds, ...event.value.split(",")]),
-            // }),
-            assign({
-              deselectedIds: ({ context, event }) => {
-                const set: any[] = [];
-
-                console.log("initial set", set, context.deselectedIds);
-
-                if (context.deselectedIds.size > 0) {
-                  for (let item of context.deselectedIds) {
-                    console.log("Den klikkede:: ", event.value);
-                    if (event.value.split(",").includes(item)) {
-                      console.log("sletter :: ", item);
-
-                      context.deselectedIds.delete(item);
-                      console.log(context.deselectedIds);
-                      // set.push(...context.deselectedIds);
-                    } else {
-                      console.log("tilføjer :: ", item);
-                      context.deselectedIds.add(item);
-                    }
+          actions: assign({
+            deselectedIds: ({ context, event }) => {
+              if (context.deselectedIds.size > 0) {
+                for (let item of event.value.split(",")) {
+                  // if one of the toggled includes deselected item delete it
+                  if (context.deselectedIds.has(item)) {
+                    context.deselectedIds.delete(item);
+                  } else {
+                    context.deselectedIds.add(item);
                   }
-                } else {
-                  console.log("ingen længde, så adder kun");
-                  set.push(...event.value.split(","));
                 }
-
-                console.log(new Set([...context.deselectedIds]));
-                console.log(new Set([...set]));
-
-                if (set.length > 0) {
-                  return new Set([...set]);
-                } else {
-                  return new Set([...context.deselectedIds]);
-                }
-              },
-            }),
+              } else {
+                return new Set([...event.value.split(",")]);
+              }
+              return new Set([...context.deselectedIds]);
+            },
+          }),
         },
       },
     },
   },
 });
-
-const existsInDeselected = (id: string, context: Ctx): Set<string> => {
-  const IDs = id.split(",");
-  console.log(IDs);
-
-  // if array, it will be the deselected children. They need to be deleted
-  // if (IDs.length > 1) {
-  for (let index = 0; index < IDs.length; index++) {
-    console.log(IDs[index]);
-    context.deselectedIds.delete(IDs[index]);
-  }
-
-  return context.deselectedIds;
-  // }
-  // return context?.deselectedIds?.delete(id);
-};
-
-// deselectedIds: ({ context, event }) =>
-//                 (context.deselectedIds = existsInDeselected(
-//                   event.value,
-//                   context
-//                 )
-//                   ? new Set([...context.deselectedIds])
-//                   : new Set([
-//                       ...context.deselectedIds,
-//                       ...event.value.split(","),
-//                     ])),

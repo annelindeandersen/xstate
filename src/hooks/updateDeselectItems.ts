@@ -1,4 +1,3 @@
-import { NavigationMenu } from "./../navigationTypes";
 import { Ctx } from "src/adjustmentsMachine";
 
 export const updateDeselectItems = (id: string, state: Ctx): string[] => {
@@ -35,21 +34,6 @@ export const updateDeselectItems = (id: string, state: Ctx): string[] => {
 
   getChildNavItems(id);
 
-  // if (deselectedIds.has())
-
-  // deselectedIds.forEach(getChildNavItems); // DEN HER <<<<
-
-  // const deselectedSet = new Set(deselects);
-  // console.log(deselectedSet);
-
-  // const areSetsEqual = (a: Set<string>, b: Set<string>) =>
-  //   a.size === b.size && [...a].every((value) => b.has(value));
-
-  // if (areSetsEqual(deselectedSet, deselectedIds)) {
-  //   console.log("they are equal");
-  //   deselects.length = 0;
-  // }
-
-  // console.log(deselects);
-  return deselects;
+  // ensure all values exist only once
+  return [...new Set(deselects)];
 };

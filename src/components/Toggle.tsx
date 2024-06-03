@@ -1,7 +1,6 @@
 import classNames from "classnames";
 import { AdjustmentContext } from "src";
 import { NavItem } from "./NavigationButton";
-import { useEffect } from "react";
 import { updateDeselectItems } from "./../hooks/updateDeselectItems";
 
 const Toggle = ({ item }: { item: NavItem }) => {
@@ -9,10 +8,6 @@ const Toggle = ({ item }: { item: NavItem }) => {
   const { send } = adjustActorRef;
 
   const state = AdjustmentContext.useSelector((s) => s.context);
-
-  useEffect(() => {
-    // console.log(state.deselectedIds);
-  }, [state.deselectedIds]);
 
   const handleToggle = (id: string) => {
     // send({ type: "TOGGLE", value: id });
