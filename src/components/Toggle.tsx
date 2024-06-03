@@ -11,13 +11,16 @@ const Toggle = ({ item }: { item: NavItem }) => {
   const state = AdjustmentContext.useSelector((s) => s.context);
 
   useEffect(() => {
-    console.log(state.deselectedIds);
+    // console.log(state.deselectedIds);
   }, [state.deselectedIds]);
 
   const handleToggle = (id: string) => {
-    send({ type: "TOGGLE", value: id });
+    // send({ type: "TOGGLE", value: id });
 
-    const IDs = updateDeselectItems(state.deselectedIds, state.navigationMenu);
+    if (state.deselectedIds.has(id)) {
+    }
+
+    const IDs = updateDeselectItems(id, state);
     if (IDs.length === 0) {
       return;
     }

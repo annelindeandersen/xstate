@@ -1,40 +1,12 @@
 import { updateLocalstorage } from "./hooks/updateLocalstorage";
-import {
-  setup,
-  assign,
-  SetupTypes,
-  NonReducibleUnknown,
-  EventObject,
-  MetaObject,
-} from "xstate";
+import { setup, assign, createActor } from "xstate";
 import { NavigationMenu } from "./navigationTypes";
-import { NavItem } from "@components/NavigationButton";
 import { updateDeselectItems } from "./hooks/updateDeselectItems";
 
-// interface Adjustment {
-//   [listId: string]: Set<string>;
-// }
-
-interface Ctx {
+export interface Ctx {
   deselectedIds: Set<string>;
   navigationMenu: NavigationMenu;
 }
-
-type Context = SetupTypes<
-  { deselectedIds: Set<string>; navigationMenu: NavigationMenu },
-  | { type: "SET_MENU"; value: NavigationMenu }
-  | { type: "TOGGLE"; value: string }
-  | { type: "ADJUST" }
-  | { type: "CLOSE" }
-  | { type: "SAVE" }
-  | { type: "DELETE" },
-  {},
-  string,
-  NonReducibleUnknown,
-  NonReducibleUnknown,
-  EventObject,
-  MetaObject
->;
 
 export const adjustmentsMachine = setup({
   types: {
@@ -74,24 +46,78 @@ export const adjustmentsMachine = setup({
             updateLocalstorage("1", [...context.deselectedIds].join(", ")),
         },
         TOGGLE: {
-          actions: [
+          actions:
+            // assign({
+            //   deselectedIds: ({ context, event }) =>
+            //     new Set([...context.deselectedIds, ...event.value.split(",")]),
+            // }),
             assign({
-              deselectedIds: ({ context, event }) =>
-                (context.deselectedIds = context.deselectedIds.delete(
-                  event.value
-                )
-                  ? new Set([...context.deselectedIds])
-                  : new Set([
-                      ...context.deselectedIds,
-                      ...event.value.split(","),
-                    ])),
+              deselectedIds: ({ context, event }) => {
+                const set: any[] = [];
+
+                console.log("initial set", set);
+
+                if (context.deselectedIds.size > 0) {
+                  for (let item of context.deselectedIds) {
+                    // console.log("Alle i settet :: ", item);
+                    if (event.value.split(",").includes(item)) {
+                      console.log("sletter :: ", item);
+
+                      context.deselectedIds.delete(item);
+                      set.push(context.deselectedIds);
+
+                      console.log(context.deselectedIds);
+                      // set.push(...context.deselectedIds);
+                    } else {
+                      console.log("tilføjer :: ", item);
+                      context.deselectedIds.add(item);
+                      set.push(...event.value.split(","));
+                    }
+                  }
+                } else {
+                  console.log("ingen længde, så adder kun");
+                  set.push(...event.value.split(","));
+                }
+
+                console.log(new Set([...set]));
+
+                return new Set([...set]);
+
+                // return new Set([
+                //   ...context.deselectedIds,
+                //   ...event.value.split(","),
+                // ]);
+              },
             }),
-          ],
+          // assign({
+          //   deselectedIds: ({ context, event }) =>
+          //     (context.deselectedIds = context.deselectedIds.delete(
+          //       event.value
+          //     )
+          //       ? new Set([...context.deselectedIds])
+          //       : new Set([
+          //           ...context.deselectedIds,
+          //           ...event.value.split(","),
+          //         ])),
+          // }),
         },
       },
     },
   },
 });
+
+// const countActor = createActor(adjustmentsMachine).start();
+
+// countActor.subscribe((state) => {
+//   console.log("Deselected IDs :: ", state.context.deselectedIds);
+// });
+
+// const handleToggle = (context: Ctx): Set<string> => {
+//   for (let item of context.deselectedIds) {
+//     // if (item < 10) set.add(item + 1);
+//     console.log(item);
+//   }
+// };
 
 const existsInDeselected = (id: string, context: Ctx): Set<string> => {
   const IDs = id.split(",");

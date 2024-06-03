@@ -1,9 +1,7 @@
-import { NavigationMenu } from "src/navigationTypes";
+import { NavigationMenu } from "./../navigationTypes";
+import { Ctx } from "src/adjustmentsMachine";
 
-export const updateDeselectItems = (
-  deselectedIds: Set<string>,
-  navigationMenu: NavigationMenu
-): string[] => {
+export const updateDeselectItems = (id: string, state: Ctx): string[] => {
   const parentTypes = new Set([
     "course",
     "chapter",
@@ -12,6 +10,8 @@ export const updateDeselectItems = (
     "grid-group",
     "page",
   ]);
+
+  const { navigationMenu, deselectedIds } = state;
 
   const deselects: string[] = [];
 
@@ -24,13 +24,18 @@ export const updateDeselectItems = (
         // run again for children
         childrenIds.size > 0 && childrenIds.forEach(getChildNavItems);
 
-        // deselects.push(id, ...childrenIds);
-        deselects.push(...childrenIds);
+        deselects.push(id, ...childrenIds);
+      } else {
+        deselects.push(id);
       }
     }
   };
 
-  deselectedIds.forEach(getChildNavItems);
+  getChildNavItems(id);
+
+  // if (deselectedIds.has())
+
+  // deselectedIds.forEach(getChildNavItems); // DEN HER <<<<
 
   // const deselectedSet = new Set(deselects);
   // console.log(deselectedSet);
