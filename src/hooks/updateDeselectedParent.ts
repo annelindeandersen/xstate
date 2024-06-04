@@ -14,8 +14,10 @@ export const updateDeselectedParent = (id: string, state: Ctx) => {
 
     if (parent) {
       const allChildrenDeselected = isEveryChildOfParentToggled(parent, state);
-      allChildrenDeselected && parentIds.push(parent);
-      console.log(allChildrenDeselected);
+      if (allChildrenDeselected && navigationMenu[parent].type !== "page") {
+        console.log(allChildrenDeselected);
+        parentIds.push(parent);
+      }
 
       // if not all children are deselected, parent HAS to be active
       if (!allChildrenDeselected) {
