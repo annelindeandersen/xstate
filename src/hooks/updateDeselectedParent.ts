@@ -1,19 +1,28 @@
 import { Ctx } from "src/adjustmentsMachine";
 
-const updateDeselectedParent = (id: string, state: Ctx) => {
+export const updateDeselectedParent = (id: string, state: Ctx) => {
   const { navigationMenu, deselectedIds } = state;
 
-  const deselects = [];
+  const parentIds: string[] = [];
 
-  // check if all children of a given parent are selected to then deselect the parent also
-  const parent = navigationMenu[id].parentId;
+  const getParent = (id: string) => {
+    // check if all children of a given parent are selected to then deselect the parent also
+    const parent = navigationMenu[id].parentId;
 
-  if (parent) {
-    const allChildrenDeselected = navigationMenu[parent].childrenIds.every(
-      (item) => deselectedIds.has(item)
-    );
-    allChildrenDeselected && deselects.push(parent);
-  }
+    console.log(deselectedIds);
 
-  return deselects;
+    if (parent) {
+      const allChildrenDeselected = navigationMenu[parent].childrenIds.every(
+        (item) => deselectedIds.has(item)
+      );
+      allChildrenDeselected && parentIds.push(parent);
+
+      // run again for parent in case its own parent needs deselecting
+      getParent(parent);
+    }
+  };
+
+  getParent(id);
+
+  return parentIds;
 };

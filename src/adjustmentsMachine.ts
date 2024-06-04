@@ -2,6 +2,7 @@ import { updateLocalstorage } from "./hooks/updateLocalstorage";
 import { setup, assign } from "xstate";
 import { NavigationMenu } from "./navigationTypes";
 import { updateDeselectedChildren } from "./hooks/updateDeselectedChildren";
+import { updateDeselectedParent } from "./hooks/updateDeselectedParent";
 
 export interface Ctx {
   deselectedIds: Set<string>;
@@ -51,14 +52,22 @@ export const adjustmentsMachine = setup({
               const items = updateDeselectedChildren(event.value, context);
 
               if (context.deselectedIds.size > 0) {
-                for (let item of items) {
-                  // if one of the toggled includes deselected item delete it
-                  if (context.deselectedIds.has(item)) {
-                    context.deselectedIds.delete(item);
-                  } else {
-                    context.deselectedIds.add(item);
+                const loopThroughNav = (navigationItems: string[]) => {
+                  for (let item of navigationItems) {
+                    // if deselectedIds includes toggled item delete it, else add
+                    if (context.deselectedIds.has(item)) {
+                      context.deselectedIds.delete(item);
+                    } else {
+                      context.deselectedIds.add(item);
+
+                      const parentIds = updateDeselectedParent(item, context);
+                      if (parentIds) {
+                        loopThroughNav(parentIds);
+                      }
+                    }
                   }
-                }
+                };
+                loopThroughNav(items);
               } else {
                 return new Set([...items]);
               }
