@@ -1,21 +1,12 @@
 import { Ctx } from "src/adjustmentsMachine";
 
-export const updateDeselectItems = (id: string, state: Ctx): string[] => {
-  const parentTypes = new Set([
-    "course",
-    "chapter",
-    "section-group",
-    "question-group",
-    "grid-group",
-    "page",
-  ]);
-
-  const { navigationMenu, deselectedIds } = state;
+export const updateDeselectedChildren = (id: string, state: Ctx): string[] => {
+  const { navigationMenu } = state;
 
   const deselects: string[] = [];
 
   const getChildNavItems = (id: string) => {
-    if (parentTypes.has(navigationMenu[id].type)) {
+    if (navigationMenu[id].childrenIds.length > 0) {
       const childrenIds = new Set(navigationMenu[id].childrenIds);
 
       // check if item has children

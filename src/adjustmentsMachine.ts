@@ -1,6 +1,7 @@
 import { updateLocalstorage } from "./hooks/updateLocalstorage";
 import { setup, assign } from "xstate";
 import { NavigationMenu } from "./navigationTypes";
+import { updateDeselectedChildren } from "./hooks/updateDeselectedChildren";
 
 export interface Ctx {
   deselectedIds: Set<string>;
@@ -47,8 +48,10 @@ export const adjustmentsMachine = setup({
         TOGGLE: {
           actions: assign({
             deselectedIds: ({ context, event }) => {
+              const items = updateDeselectedChildren(event.value, context);
+
               if (context.deselectedIds.size > 0) {
-                for (let item of event.value.split(",")) {
+                for (let item of items) {
                   // if one of the toggled includes deselected item delete it
                   if (context.deselectedIds.has(item)) {
                     context.deselectedIds.delete(item);
@@ -57,7 +60,7 @@ export const adjustmentsMachine = setup({
                   }
                 }
               } else {
-                return new Set([...event.value.split(",")]);
+                return new Set([...items]);
               }
               return new Set([...context.deselectedIds]);
             },

@@ -1,7 +1,6 @@
 import classNames from "classnames";
 import { AdjustmentContext } from "src";
 import { NavItem } from "./NavigationButton";
-import { updateDeselectItems } from "./../hooks/updateDeselectItems";
 
 const Toggle = ({ item }: { item: NavItem }) => {
   const adjustActorRef = AdjustmentContext.useActorRef();
@@ -9,26 +8,9 @@ const Toggle = ({ item }: { item: NavItem }) => {
 
   const state = AdjustmentContext.useSelector((s) => s.context);
 
-  const handleToggle = (id: string) => {
-    // send({ type: "TOGGLE", value: id });
-
-    if (state.deselectedIds.has(id)) {
-    }
-
-    const IDs = updateDeselectItems(id, state);
-    if (IDs.length === 0) {
-      return;
-    }
-
-    send({
-      type: "TOGGLE",
-      value: IDs.join(","),
-    });
-  };
-
   return (
     <button
-      onClick={() => handleToggle(item.id)}
+      onClick={() => send({ type: "TOGGLE", value: item.id })}
       className={classNames(
         "w-12 h-6 relative rounded-full transition-all duration-300",
         state.deselectedIds.has(item.id) ? "bg-gray-200" : "bg-green-400"
