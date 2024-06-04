@@ -1,4 +1,5 @@
 import { Ctx } from "src/adjustmentsMachine";
+import { isEveryChildOfParentToggled } from "./isEveryChildOfParentToggled";
 
 export const updateDeselectedParent = (id: string, state: Ctx) => {
   const { navigationMenu, deselectedIds } = state;
@@ -12,10 +13,14 @@ export const updateDeselectedParent = (id: string, state: Ctx) => {
     console.log(deselectedIds);
 
     if (parent) {
-      const allChildrenDeselected = navigationMenu[parent].childrenIds.every(
-        (item) => deselectedIds.has(item)
-      );
+      const allChildrenDeselected = isEveryChildOfParentToggled(parent, state);
       allChildrenDeselected && parentIds.push(parent);
+      console.log(allChildrenDeselected);
+
+      // if not all children are deselected, parent HAS to be active
+      if (!allChildrenDeselected) {
+        state.deselectedIds.delete(parent);
+      }
 
       // run again for parent in case its own parent needs deselecting
       getParent(parent);
