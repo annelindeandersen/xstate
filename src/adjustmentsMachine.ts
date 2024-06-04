@@ -1,8 +1,6 @@
 import { updateLocalstorage } from "./hooks/updateLocalstorage";
 import { setup, assign } from "xstate";
 import { NavigationMenu } from "./navigationTypes";
-import { updateDeselectedChildren } from "./hooks/updateDeselectedChildren";
-import { updateDeselectedParent } from "./hooks/updateDeselectedParent";
 import { getSelectItems } from "./hooks/getSelectItems";
 import { getDeselectItems } from "./hooks/getDeselectItems";
 
@@ -51,10 +49,8 @@ export const adjustmentsMachine = setup({
           actions: assign({
             deselectedIds: ({ context, event }) => {
               if (context.deselectedIds.has(event.value)) {
-                console.log("select");
                 return getSelectItems(event.value, context);
               } else {
-                console.log("deselect");
                 return getDeselectItems(event.value, context);
               }
             },

@@ -12,8 +12,6 @@ export interface NavItem {
 const NavigationButton = ({ item }: { item: any }) => {
   const type = AdjustmentContext.useSelector((s) => s.value);
 
-  // console.log(item);
-
   const navItem = {
     id: item.id,
     parentId: item.parentId,

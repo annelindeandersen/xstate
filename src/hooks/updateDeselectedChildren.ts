@@ -1,7 +1,10 @@
 import { Ctx } from "src/adjustmentsMachine";
 
-export const updateDeselectedChildren = (id: string, state: Ctx): string[] => {
-  const { navigationMenu } = state;
+export const updateDeselectedChildren = (
+  id: string,
+  context: Ctx
+): string[] => {
+  const { navigationMenu } = context;
 
   const deselects: string[] = [];
 

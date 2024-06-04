@@ -13,7 +13,6 @@ export const getDeselectItems = (id: string, context: Ctx): Set<string> => {
           context.deselectedIds.add(item);
         }
 
-        // check if it even needs to loop through parents TODO
         const parentIds = updateDeselectedParent(item, context);
         if (parentIds) {
           loopThroughNav(parentIds);

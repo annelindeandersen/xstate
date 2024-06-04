@@ -12,15 +12,9 @@ function App() {
   const { send } = navigationActorRef;
 
   const type = AdjustmentContext.useSelector((s) => s.value);
-  const deselectedContext = AdjustmentContext.useSelector(
-    (s) => s.context.deselectedIds
-  );
   const navigationContext = AdjustmentContext.useSelector(
     (s) => s.context.navigationMenu
   );
-
-  // console.log(deselectedContext);
-  // console.log(navigationContext);
 
   useEffect(() => {
     if (JSON.stringify(navigationContext) === "{}") {

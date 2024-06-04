@@ -17,21 +17,6 @@ export const getSelectItems = (id: string, context: Ctx): Set<string> => {
         if (parentIds) {
           loopThroughNav(parentIds);
         }
-
-        // check if it even needs to change the parent before going there
-        // const parentId = context.navigationMenu[item].parentId;
-        // if (parentId) {
-        //   const allChildrenDeselected = context.navigationMenu[
-        //     parentId
-        //   ].childrenIds.every((item) => context.deselectedIds.has(item));
-
-        //   if (allChildrenDeselected) {
-        //     const parentIds = updateDeselectedParent(item, context);
-        //     if (parentIds) {
-        //       loopThroughNav(parentIds);
-        //     }
-        //   }
-        // }
       }
     };
     loopThroughNav(items);
