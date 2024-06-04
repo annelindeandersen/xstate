@@ -1,8 +1,8 @@
-import { updateLocalstorage } from "./hooks/updateLocalstorage";
+import { updateLocalstorage } from "./utils/updateLocalstorage";
 import { setup, assign } from "xstate";
 import { NavigationMenu } from "./navigationTypes";
-import { getSelectItems } from "./hooks/getSelectItems";
-import { getDeselectItems } from "./hooks/getDeselectItems";
+import { getSelectItems } from "./assigners/getSelectItems";
+import { getDeselectItems } from "./assigners/getDeselectItems";
 
 export interface Ctx {
   deselectedIds: Set<string>;
@@ -43,7 +43,10 @@ export const adjustmentsMachine = setup({
         CLOSE: "close",
         SAVE: {
           actions: ({ context }) =>
-            updateLocalstorage("1", [...context.deselectedIds].join(", ")),
+            updateLocalstorage(
+              "Deselected id's for adjustment",
+              [...context.deselectedIds].join(", ")
+            ),
         },
         TOGGLE: {
           actions: assign({

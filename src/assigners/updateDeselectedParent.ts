@@ -1,5 +1,5 @@
 import { Ctx } from "src/adjustmentsMachine";
-import { isEveryChildOfParentToggled } from "./isEveryChildOfParentToggled";
+import { isEveryChildOfParentToggled } from "../utils/isEveryChildOfParentToggled";
 
 export const updateDeselectedParent = (id: string, context: Ctx) => {
   const { navigationMenu, deselectedIds } = context;
