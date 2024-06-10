@@ -9,7 +9,7 @@ export const updateDeselectedChildren = (
   const deselects: string[] = [];
 
   const getChildNavItems = (id: string) => {
-    if (navigationMenu[id].childrenIds.length > 0) {
+    if (navigationMenu[id]?.childrenIds.length > 0) {
       const childrenIds = new Set(navigationMenu[id].childrenIds);
 
       // check if item has children

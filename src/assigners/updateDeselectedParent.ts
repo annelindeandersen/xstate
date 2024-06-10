@@ -8,7 +8,7 @@ export const updateDeselectedParent = (id: string, context: Ctx) => {
 
   const getParent = (id: string) => {
     // check if all children of a given parent are selected to then deselect the parent also
-    const parent = navigationMenu[id].parentId;
+    const parent = navigationMenu[id]?.parentId;
 
     if (parent) {
       const allChildrenDeselected = isEveryChildOfParentToggled(
